@@ -1,0 +1,10 @@
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: bookRoute
+          uri: https://localhost:8081
+          predicates:
+            - Method=GET
+            - Path=/Hi/{name}
+          filters:
