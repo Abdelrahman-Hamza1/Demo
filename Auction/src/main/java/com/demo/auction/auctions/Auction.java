@@ -1,6 +1,5 @@
 package com.demo.auction.auctions;
 
-import com.demo.auction.Status;
 import com.demo.auction.bid.Bid;
 import jakarta.persistence.*;
 import lombok.*;
@@ -27,9 +26,11 @@ public class Auction {
     int userId;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     List<Bid> bids;
-    Status status;
+    AuctionStatus status;
+    int buyerId = -1;
+    Trust trust = Trust.UNKNOWN;
 
-    public Auction(String title, int bookId, int userId, List<Bid> bids, Status status) {
+    public Auction(String title, int bookId, int userId, List<Bid> bids, AuctionStatus status) {
         this.title = title;
         this.bookId = bookId;
         this.userId = userId;

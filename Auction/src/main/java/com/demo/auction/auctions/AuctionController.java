@@ -4,8 +4,6 @@ package com.demo.auction.auctions;
 import com.demo.auction.bid.Bid;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
-
 import java.util.List;
 
 @RestController
@@ -14,10 +12,11 @@ import java.util.List;
 public class AuctionController {
 
     AuctionService auctionService;
-//    RestTemplate restTemplate;
-//    return restTemplate.getForObject("https://BOOKS/Book/IsValid/2", Boolean.class);
 
-    // QUESTION : DO WE VERIFY USER ID & BOOK ID ?? ?? ??
+    @GetMapping("/GetAll")
+    public List<Auction> getAll(){
+        return auctionService.getAllAuctions();
+    }
 
     @PostMapping("/CreateAuction/{title}/{bookId}/{userId}")
     public void createAuction(@PathVariable  String title
@@ -38,10 +37,10 @@ public class AuctionController {
                 "today's date", comment));
     }
 
-    @PostMapping("/AddNewBookAuction/")
-    public void addBookThatDoesntExist(){
-        // Send book to library database, request for approval, when approved -> add auction after book addition.
-
+    @PostMapping("/AddNewBookAuction/{title}/{userId}/{name}/{author}")
+    public void addBookThatDoesntExist(@PathVariable String name,@PathVariable String author,
+                                       @PathVariable String title,@PathVariable  int userId){
+        auctionService.addAuctionForNewBook(name, author, title, userId);
     }
 
     @PutMapping("/SoldItem/{auctionId}")
@@ -54,4 +53,9 @@ public class AuctionController {
         auctionService.removeBidById(auctionId,bidId);
     }
 
+    @GetMapping("/ConfirmAuction/{auctionId}")
+    public boolean confirmAuction(@PathVariable int auctionId){
+        auctionService.confirmAuction(auctionId);
+        return true;
+    }
 }

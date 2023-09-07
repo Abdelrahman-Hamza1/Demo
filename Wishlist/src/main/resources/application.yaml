@@ -3,6 +3,11 @@ server:
 spring:
   application:
     name: WISHLIST
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8085/realms/bookstore-realm
 eureka:
   client:
     service-url:
