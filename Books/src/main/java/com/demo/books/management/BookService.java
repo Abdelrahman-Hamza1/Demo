@@ -1,10 +1,15 @@
 package com.demo.books.management;
 
+import com.demo.books.messaging.AuthorMessage;
+import com.demo.books.messaging.RabbitMQConfiguration;
 import lombok.AllArgsConstructor;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.UUID;
 
 @AllArgsConstructor
 @Service
@@ -13,9 +18,18 @@ public class BookService {
     BookRepository bookRepository;
     AuctionedBooksRepository auctionedBooksRepository;
     RestTemplate restTemplate;
+    RabbitTemplate template;
 
     public Book addBook(Book book){
         // Also send message to a queue which user service will consume and notify user accordingly.
+        AuthorMessage message = new AuthorMessage();
+
+        message.setUUID(UUID.randomUUID().toString());
+        message.setAuthorName(book.getAuthor());
+
+        template.convertAndSend(RabbitMQConfiguration.EXCHANGE,
+                RabbitMQConfiguration.ROUTING_KEY_THREE, message);
+
         return bookRepository.save(book);
     }
 
@@ -34,8 +48,15 @@ public class BookService {
         return null;
     }
 
-    public void updateBook(Book book){
-        bookRepository.save(book);
+    public void updateBook( int id,  String name,  String author,int price,  int quantity){
+        Book b = bookRepository.findById(id).get();
+        b.setPrice(price);
+        b.setQuantity(quantity);
+        b.setName(name);
+        b.setAuthor(author);
+
+        bookRepository.save(b);
+
     }
 
     public void deleteBook(int bookId){
@@ -47,7 +68,7 @@ public class BookService {
     }
 
     public List<AuctionedBook> getAllAuctionedBooks(){
-        return auctionedBooksRepository.findAll();
+        return auctionedBooksRepository.findAllByStatusIs(Status.PENDING);
     }
 
     public AuctionedBook findAuctionedBookById(int id){

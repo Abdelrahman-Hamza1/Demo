@@ -1,4 +1,4 @@
-package com.demo.books;
+package com.demo.auction.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,9 +15,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> {
-                      auth.anyRequest().permitAll();
-//                    auth.requestMatchers("/SystemAdmin/**").hasRole("ADMIN");
-//                    auth.requestMatchers("/User/**").hasAnyRole("ADMIN", "USER")
+                    auth.anyRequest().permitAll();
                 });
         return http.build();
     }

@@ -22,12 +22,13 @@ public class AuthorSubscription {
     )
     int id;
     String authorName;
-    String username; // user who subbed to author
+    String username;
+    String userEmail;
     Boolean isDeleted;
 
-    public AuthorSubscription(String authorName, String username, Boolean isDeleted) {
+    public AuthorSubscription(String authorName, String username, String userEmail) {
         this.authorName = authorName;
         this.username = username;
-        this.isDeleted = isDeleted;
+        this.userEmail = userEmail;
     }
 }

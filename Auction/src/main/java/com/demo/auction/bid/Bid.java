@@ -19,13 +19,13 @@ public class Bid {
     )
     int id;
     double amount;
-    int userId;
+    String username;
     String date; // CHANGE TO DATE OBJECT LATER -> MATCH WITH MYSQL DATE
     String comment;
 
-    public Bid(double amount, int userId, String date, String comment) {
+    public Bid(double amount, String username, String date, String comment) {
         this.amount = amount;
-        this.userId = userId;
+        this.username = username;
         this.date = date;
         this.comment = comment;
     }

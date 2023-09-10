@@ -14,6 +14,16 @@ spring:
     gateway:
       default-filters:
         - TokenRelay
+        - name: RequestRateLimiter
+          args:
+            redis-rate-limiter:
+              replenishRate: 10
+              burstCapacity: 20
+              requestedTokens: 1
+        - name: CircuitBreaker
+          args:
+            name: fallBackService
+            fallbackUri: forward:/Handle-Failure
       discovery:
         locator:
           enabled: true
@@ -35,13 +45,17 @@ spring:
           uri: lb://USER
           predicates:
             - Path=/auth/**
+        - id: AuthorRoute
+          uri: lb://AUTHOR
+          predicates:
+            - Path=/Author/**
   security:
     oauth2:
       client:
         registration:
           keycloak:
             client-id: bookstore-client
-            client-secret: fyIWlMtbdAUAHe75O0dJNkHGLeIouL8H
+            client-secret: GN5fLteQS3M7VqWDelbJiBn9elJZCFYo
             scope: openid
         provider:
           keycloak:

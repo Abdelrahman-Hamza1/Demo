@@ -13,8 +13,8 @@ public class WishlistService {
     WishlistRepository wishlistRepository;
 
 
-    public void createWishlist(String title, int userId){
-        wishlistRepository.save(new Wishlist(title,userId,new ArrayList<>()));
+    public void createWishlist(String title, String username){
+        wishlistRepository.save(new Wishlist(title,username,new ArrayList<>()));
     }
 
     public List<Wishlist> getAllWishLists(){
@@ -25,8 +25,8 @@ public class WishlistService {
         return wishlistRepository.findById(Id).get();
     }
 
-    public List<Wishlist> findByUserId(int userId){
-        return  wishlistRepository.findAllByUserId(userId);
+    public List<Wishlist> findByUserId(String username){
+        return  wishlistRepository.findAllByUsername(username);
     }
 
     public Wishlist addBook(int bookId, int wishlistId){

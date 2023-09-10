@@ -3,8 +3,12 @@ package com.demo.auction.auctions;
 
 import com.demo.auction.bid.Bid;
 import lombok.AllArgsConstructor;
+import org.json.JSONObject;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Base64;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/Auction")
@@ -18,11 +22,11 @@ public class AuctionController {
         return auctionService.getAllAuctions();
     }
 
-    @PostMapping("/CreateAuction/{title}/{bookId}/{userId}")
+    @GetMapping("/CreateAuction/{title}/{bookId}")
     public void createAuction(@PathVariable  String title
             ,@PathVariable int bookId
-            ,@PathVariable int userId){
-        auctionService.createAuction(title,bookId,userId);
+            ,@RequestHeader Map<String, String> headers){
+        auctionService.createAuction(title,bookId,getUsername(headers));
     }
 
     @GetMapping("/GetAuctions/{title}")
@@ -30,25 +34,25 @@ public class AuctionController {
         return auctionService.getAuctionsByTitleContaining(title);
     }
 
-    @PostMapping("/AddBid/{auctionId}/{amount}/{userId}/{comment}")
+    @GetMapping("/AddBid/{auctionId}/{amount}/{comment}")
     public void addBidOnAuction(@PathVariable int auctionId,@PathVariable double amount,
-                                @PathVariable int userId,@PathVariable String comment){
-        auctionService.addBidOnAuction(auctionId, new Bid(amount,userId,
+                                @PathVariable String comment, @RequestHeader Map<String, String> headers){
+        auctionService.addBidOnAuction(auctionId, new Bid(amount,getUsername(headers),
                 "today's date", comment));
     }
 
-    @PostMapping("/AddNewBookAuction/{title}/{userId}/{name}/{author}")
+    @GetMapping("/AddNewBookAuction/{title}/{name}/{author}")
     public void addBookThatDoesntExist(@PathVariable String name,@PathVariable String author,
-                                       @PathVariable String title,@PathVariable  int userId){
-        auctionService.addAuctionForNewBook(name, author, title, userId);
+                                       @PathVariable String title,@RequestHeader Map<String, String> headers){
+        auctionService.addAuctionForNewBook(name, author, title, getUsername(headers));
     }
 
-    @PutMapping("/SoldItem/{auctionId}")
+    @GetMapping("/SoldItem/{auctionId}")
     public void auctionEnded(@PathVariable int auctionId){
         auctionService.itemSold(auctionId);
     }
 
-    @DeleteMapping("/DeleteBid/{auctionId}/{bidId}")
+    @GetMapping("/DeleteBid/{auctionId}/{bidId}")
     public void deleteBid(@PathVariable  int auctionId,@PathVariable int bidId){
         auctionService.removeBidById(auctionId,bidId);
     }
@@ -57,5 +61,20 @@ public class AuctionController {
     public boolean confirmAuction(@PathVariable int auctionId){
         auctionService.confirmAuction(auctionId);
         return true;
+    }
+
+    // Takes the @RequestHeader as an input
+    public String getUsername(Map<String, String> headers){
+        Base64.Decoder decoder = Base64.getUrlDecoder();
+        String x  =  new String(decoder.decode(headers.get("authorization")
+                .split(" ")[1].split("\\.")[1]));
+        System.out.println(x);
+        try {
+            JSONObject jsonObject = new JSONObject(x);
+            return  jsonObject.getString("preferred_username");
+
+        }catch (Exception e){
+            return "";
+        }
     }
 }

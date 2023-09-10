@@ -3,7 +3,6 @@ package com.demo.auction.auctions;
 import com.demo.auction.bid.Bid;
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,17 +22,17 @@ public class Auction {
     int id;
     String title;
     int bookId;
-    int userId;
+    String username;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     List<Bid> bids;
     AuctionStatus status;
     int buyerId = -1;
     Trust trust = Trust.UNKNOWN;
 
-    public Auction(String title, int bookId, int userId, List<Bid> bids, AuctionStatus status) {
+    public Auction(String title, int bookId, String username, List<Bid> bids, AuctionStatus status) {
         this.title = title;
         this.bookId = bookId;
-        this.userId = userId;
+        this.username = username;
         this.bids = bids;
         this.status = status;
     }

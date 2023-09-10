@@ -27,7 +27,7 @@ public class AuctionService {
     public List<Auction> getAllAuctions(){
         return auctionRepository.findAll();
     }
-    public void createAuction(String title, int bookId, int userId){
+    public void createAuction(String title, int bookId, String userId){
         auctionRepository.save(new Auction(
                 title,bookId,userId, new ArrayList<>(), AuctionStatus.ONGOING
         ));
@@ -38,6 +38,7 @@ public class AuctionService {
     }
 
     public void addBidOnAuction(int auctionId, Bid bid){
+        // CHECK STATUS !!!!!!
         Auction auc = auctionRepository.findById(auctionId).get();
         auc.addBid(bid);
 
@@ -52,12 +53,14 @@ public class AuctionService {
 
     public void removeBidById(int auctionId, int bidId){
         Auction auc = auctionRepository.findById(auctionId).get();
+        // Could verify if  bid belongs to username.
         auc.removeBidById(bidId);
         auctionRepository.save(auc);
     }
 
-    public void addAuctionForNewBook(String name, String author, String title, int userId){
-        Auction auction = new Auction(title, -1, userId, new ArrayList<>(), AuctionStatus.PENDING);
+    public void addAuctionForNewBook(String name, String author, String title, String username){
+        Auction auction = new Auction(title, -1, username,
+                new ArrayList<>(), AuctionStatus.PENDING);
         auctionRepository.save(auction);
 
         Message message = new Message();

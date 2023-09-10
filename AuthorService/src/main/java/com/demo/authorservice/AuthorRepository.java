@@ -8,4 +8,5 @@ import java.util.List;
 @Repository
 public interface AuthorRepository extends JpaRepository<AuthorSubscription,Integer> {
     List<AuthorSubscription> findAllByAuthorName(String authorName);
+    void deleteAllByAuthorNameAndUsername(String authorName, String username);
 }

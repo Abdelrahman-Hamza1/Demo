@@ -20,20 +20,29 @@ public class BookController {
     RabbitTemplate template;
 
 
+    /*
+    So far, no end-points require checking for username as this is just library related books.
+    there is a need for authorization as there are some functionalities that should only be
+    available for admins.
 
-    @GetMapping("/TestTwo")
-    public Object testnumberTwo(){
-        return SecurityContextHolder.getContext().getAuthentication();
-    }
+
+    Access token is included in the Header under "Authorization"
+    It's structure is : Bearer(space)token. -> split at (space)
+    the token consists of three parts separated by a (.) -> we need the body hence get(1).
+     */
 
     @GetMapping("/TestKeyCloak")
-    public String testKeyCloak(@RequestHeader Map<String, String> headers){
+    public Object testKeyCloak(@RequestHeader Map<String, String> headers){
         // BY Default -> Username in keycloak is unique -> we can extract it from JWT to verify.
+        // This method can present many details.
         Base64.Decoder decoder = Base64.getUrlDecoder();
-        String x  =  new String(decoder.decode(headers.get("authorization").split(" ")[1].split("\\.")[1]));
+        String x  =  new String(decoder.decode(headers.get("authorization")
+                .split(" ")[1].split("\\.")[1]));
+        System.out.println(x);
         try {
             JSONObject jsonObject = new JSONObject(x);
-            return jsonObject.getString("preferred_username");
+            return  jsonObject.toString();//.getString("preferred_username");
+
         }catch (Exception e){
             System.out.println(x);
         }
@@ -46,14 +55,16 @@ public class BookController {
         return bookService.isValid(bookId);
     }
 
-    @PostMapping("/Add")
-    public Book addBook(@RequestBody Book book){
-        return bookService.addBook(book);
+    @GetMapping("/Add/{name}/{author}/{price}/{quantity}")
+    public Book addBook(@PathVariable String name,@PathVariable String author,
+                        @PathVariable int price,@PathVariable int quantity){
+        return bookService.addBook(new Book (name,  author,  price,  quantity));
     }
 
-    @PutMapping("/Update")  // EXPECTING EVERYTHING TO BE INCLUDED IN THE BODY
-    public void updateBook(@RequestBody Book book){
-         bookService.updateBook(book);
+    @GetMapping("/Update/{id}/{name}/{author}/{price}/{quantity}")  // EXPECTING EVERYTHING TO BE INCLUDED IN THE BODY
+    public void updateBook(@PathVariable int id, @PathVariable String name,@PathVariable String author,
+                           @PathVariable int price,@PathVariable int quantity){
+         bookService.updateBook(id, name,  author,  price,  quantity);
     }
 
     @GetMapping("/GetBooks")
@@ -66,29 +77,23 @@ public class BookController {
         return bookService.getBookContainingName(name);
     }
 
-    @PostMapping("/ConfirmRequest/{auctionId}")
-    public void confirmBook(@PathVariable  int auctionId){
-//        Message message = new Message();
-//        message.setMessage("yes-"+auctionId); // "yes" or "no"
-//        message.setMessageId(UUID.randomUUID().toString());
-//        template.convertAndSend(RabbitMQConfiguration.EXCHANGE,
-//                RabbitMQConfiguration.ROUTING_KEY_TWO, message);
-    }
+
 
     @GetMapping("/GetBookById/{bookId}")
     public Book getBookById(@PathVariable int bookId){
         return bookService.getBookById(bookId);
     }
 
-    @DeleteMapping("/Delete/{bookId}")
+    @GetMapping("/Delete/{bookId}")
     public void delete(@PathVariable int bookId){
         bookService.deleteBook(bookId);
     }
 
-    @GetMapping("/ConfirmBook/{bookId}/{auctionId}")
+    @GetMapping("/ConfirmBook/{bookId}/{auctionId}") // MUST BE ADMIN
     public void confirmBook(@PathVariable int bookId, @PathVariable int auctionId){
         bookService.confirmAuctionedBook(bookId,auctionId,Status.ACCEPTED);
     }
+
     @GetMapping("/GetPendingBooks")
     public List<AuctionedBook> getAllAuctionedBooks(){
         return bookService.getAllAuctionedBooks();

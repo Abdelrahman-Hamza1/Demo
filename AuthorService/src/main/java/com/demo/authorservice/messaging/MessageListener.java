@@ -16,13 +16,16 @@ public class MessageListener {
     @RabbitListener(queues = RabbitMQConfiguration.QUEUE_ONE)
     public void listener(Message message) {
 
-            // This is the message handler
+            // This message handler is activated every-time a message is written to the queue
+            // Currently, only book service writes to the queue
+            // We can let auction service write to the same queue -> also notify
+            // We could add book Id or auction Id to the message !
             List<AuthorSubscription> subs = authorRepository
                     .findAllByAuthorName(message.getAuthorName());
 
             for (AuthorSubscription sub: subs) {
                 // Assume we send message(notification here)
-                System.out.println(sub.getUsername());
+                System.out.println(sub.getUsername() + " " + sub.getUserEmail());
             }
 
     }

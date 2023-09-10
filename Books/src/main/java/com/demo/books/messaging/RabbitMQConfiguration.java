@@ -17,6 +17,8 @@ public class RabbitMQConfiguration {
     public static final String EXCHANGE = "message_exchange";
     public static final String ROUTING_KEY_ONE = "message_routingKey_ONE";
     public static final String ROUTING_KEY_TWO = "message_routingKey_TWO";
+    public static final String QUEUE_THREE = "QUEUE_BOOK_AUTHOR";
+    public static final String ROUTING_KEY_THREE = "message_routingKey_Author";
 
     @Bean
     Queue queue1() {
@@ -26,6 +28,11 @@ public class RabbitMQConfiguration {
     @Bean
     Queue queue2() {
         return new Queue(QUEUE_TWO,false);
+    }
+
+    @Bean
+    Queue queue3() {
+        return new Queue(QUEUE_THREE,false);
     }
 
     @Bean
@@ -42,6 +49,11 @@ public class RabbitMQConfiguration {
     Binding binding2(TopicExchange exchange) {
         return BindingBuilder.bind(queue2()).to(exchange).with(ROUTING_KEY_TWO);
     }
+    @Bean
+    Binding binding3(TopicExchange exchange) {
+        return BindingBuilder.bind(queue3()).to(exchange).with(ROUTING_KEY_THREE);
+    }
+
 
     @Bean
     public MessageConverter messageConverter() {

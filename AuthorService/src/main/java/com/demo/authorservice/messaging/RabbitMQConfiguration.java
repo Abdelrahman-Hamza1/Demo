@@ -14,7 +14,7 @@ public class RabbitMQConfiguration {
 
     public static final String QUEUE_ONE = "QUEUE_BOOK_AUTHOR";
     public static final String EXCHANGE = "message_exchange";
-    public static final String ROUTING_KEY_ONE = "message_routingKey";
+    public static final String ROUTING_KEY_ONE = "message_routingKey_Author";
 
 
     @Bean
