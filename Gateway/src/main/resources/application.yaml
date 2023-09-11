@@ -49,6 +49,10 @@ spring:
           uri: lb://AUTHOR
           predicates:
             - Path=/Author/**
+        - id: AuthorizationRoute
+          uri: lb://AUTHORIZATION
+          predicates:
+            - Path=/Authorization/**
   security:
     oauth2:
       client:

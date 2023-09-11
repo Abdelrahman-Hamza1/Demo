@@ -21,6 +21,4 @@ public class AuthorSubService {
     public List<AuthorSubscription> getAll(){
         return  authorRepository.findAll();
     }
-
-
 }

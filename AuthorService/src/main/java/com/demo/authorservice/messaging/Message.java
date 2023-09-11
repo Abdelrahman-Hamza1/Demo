@@ -7,4 +7,5 @@ import lombok.Data;
 public class Message {
     String UUID;
     String authorName;
+    // could add more details , not the point now.
 }

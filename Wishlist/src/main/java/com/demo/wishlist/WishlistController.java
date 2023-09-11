@@ -36,30 +36,33 @@ public class WishlistController {
     }
 
     @GetMapping("/AddBook/{bookId}/{wishListId}")
-    public Wishlist addBook(@PathVariable  int bookId,@PathVariable int wishListId){
-        return wishlistService.addBook(bookId,wishListId);
+    public Wishlist addBook(@PathVariable  int bookId,@PathVariable int wishListId,
+                            @RequestHeader Map<String, String> headers){
+        return wishlistService.addBook(bookId,wishListId, getUsername(headers));
     }
 
     @GetMapping("/DeleteBook/{bookId}/{wishListId}")
-    public void removeBook(@PathVariable  int bookId,@PathVariable int wishListId){
-         wishlistService.removeBook(bookId,wishListId);
+    public void removeBook(@PathVariable  int bookId,@PathVariable int wishListId,
+                           @RequestHeader Map<String,String> headers){
+         wishlistService.removeBook(bookId,wishListId, getUsername(headers));
     }
 
+    // Get username & verify ownership.
     @GetMapping("/Delete/{wishListId}")
-    public void removeWishList(@PathVariable int wishListId){
-        wishlistService.removeWishlist(wishListId);
+    public void removeWishList(@PathVariable int wishListId,@RequestHeader Map<String,String> headers){
+        wishlistService.removeWishlist(wishListId,getUsername(headers));
     }
 
     @GetMapping("/UpdateTitle/{wishListId}/{title}")
-    public void updateWishListTitle(@PathVariable String title, @PathVariable int wishListId){
-        wishlistService.updateTitle(title,wishListId);
+    public void updateWishListTitle(@PathVariable String title, @PathVariable int wishListId,
+                                    @RequestHeader Map<String,String> headers){
+        wishlistService.updateTitle(title,wishListId,getUsername(headers));
     }
 
     public String getUsername(Map<String, String> headers){
         Base64.Decoder decoder = Base64.getUrlDecoder();
         String x  =  new String(decoder.decode(headers.get("authorization")
                 .split(" ")[1].split("\\.")[1]));
-        System.out.println(x);
         try {
             JSONObject jsonObject = new JSONObject(x);
             return  jsonObject.getString("preferred_username");

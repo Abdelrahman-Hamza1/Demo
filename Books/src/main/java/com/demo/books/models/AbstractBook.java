@@ -1,4 +1,4 @@
-package com.demo.books.management;
+package com.demo.books.models;
 
 import jakarta.persistence.*;
 import lombok.Data;

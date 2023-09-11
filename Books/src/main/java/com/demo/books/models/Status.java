@@ -1,4 +1,4 @@
-package com.demo.auction.books;
+package com.demo.books.models;
 
 public enum Status {
     ACCEPTED,

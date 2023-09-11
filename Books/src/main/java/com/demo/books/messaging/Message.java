@@ -1,6 +1,6 @@
 package com.demo.books.messaging;
 
-import com.demo.books.management.AuctionedBook;
+import com.demo.books.models.AuctionedBook;
 import lombok.*;
 
 @ToString

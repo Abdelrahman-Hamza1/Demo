@@ -2,11 +2,12 @@ package com.demo.auction.auctions;
 
 
 import com.demo.auction.bid.Bid;
+import com.demo.auction.models.Auction;
 import lombok.AllArgsConstructor;
 import org.json.JSONObject;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.Base64;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -34,11 +35,12 @@ public class AuctionController {
         return auctionService.getAuctionsByTitleContaining(title);
     }
 
+    // TEST !
     @GetMapping("/AddBid/{auctionId}/{amount}/{comment}")
     public void addBidOnAuction(@PathVariable int auctionId,@PathVariable double amount,
                                 @PathVariable String comment, @RequestHeader Map<String, String> headers){
         auctionService.addBidOnAuction(auctionId, new Bid(amount,getUsername(headers),
-                "today's date", comment));
+                new Date().toString(), comment));
     }
 
     @GetMapping("/AddNewBookAuction/{title}/{name}/{author}")
@@ -47,14 +49,15 @@ public class AuctionController {
         auctionService.addAuctionForNewBook(name, author, title, getUsername(headers));
     }
 
+    // PERHAPS TAKE BID ID TO STORE WHO BOUGHT !.
     @GetMapping("/SoldItem/{auctionId}")
-    public void auctionEnded(@PathVariable int auctionId){
-        auctionService.itemSold(auctionId);
+    public void auctionEnded(@PathVariable int auctionId, @RequestHeader Map<String,String> headers){
+        auctionService.itemSold(auctionId, getUsername(headers));
     }
 
     @GetMapping("/DeleteBid/{auctionId}/{bidId}")
-    public void deleteBid(@PathVariable  int auctionId,@PathVariable int bidId){
-        auctionService.removeBidById(auctionId,bidId);
+    public void deleteBid(@PathVariable  int auctionId,@PathVariable int bidId,@RequestHeader Map<String, String> headers){
+        auctionService.removeBidById(auctionId,bidId,getUsername(headers));
     }
 
     @GetMapping("/ConfirmAuction/{auctionId}")
@@ -68,7 +71,6 @@ public class AuctionController {
         Base64.Decoder decoder = Base64.getUrlDecoder();
         String x  =  new String(decoder.decode(headers.get("authorization")
                 .split(" ")[1].split("\\.")[1]));
-        System.out.println(x);
         try {
             JSONObject jsonObject = new JSONObject(x);
             return  jsonObject.getString("preferred_username");

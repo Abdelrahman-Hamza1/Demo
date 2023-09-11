@@ -8,8 +8,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class MessageListener {
 
-    @Autowired
-    AuctionService auctionService;
+//    @Autowired
+//    AuctionService auctionService;
 
 //    @RabbitListener(queues = RabbitMQConfiguration.QUEUE_TWO)
 //    public void listener(Message message) {

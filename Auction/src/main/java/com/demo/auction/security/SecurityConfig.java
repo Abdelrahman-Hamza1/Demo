@@ -13,6 +13,9 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
+        /*
+            MOST LIKELY USELESS -> REMOVE WITH DEPENDENCY LATER.
+         */
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> {
                     auth.anyRequest().permitAll();

@@ -1,4 +1,4 @@
-package com.demo.books.management;
+package com.demo.books.models;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -6,7 +6,7 @@ import lombok.*;
 @ToString@NoArgsConstructor@Getter@Setter@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table
-public class Book extends AbstractBook{
+public class Book extends AbstractBook {
     int price;
     int quantity;
 

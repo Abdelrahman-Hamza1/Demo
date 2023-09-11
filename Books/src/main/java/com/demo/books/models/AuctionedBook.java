@@ -1,4 +1,4 @@
-package com.demo.books.management;
+package com.demo.books.models;
 
 
 import jakarta.persistence.Entity;
@@ -11,7 +11,7 @@ import lombok.ToString;
 @Data
 @Entity@Table
 @ToString(callSuper = true)
-public class AuctionedBook extends AbstractBook{
+public class AuctionedBook extends AbstractBook {
     Status status;
     int auctionId;
 }

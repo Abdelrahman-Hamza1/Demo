@@ -2,13 +2,16 @@ package com.demo.books.management;
 
 import com.demo.books.messaging.AuthorMessage;
 import com.demo.books.messaging.RabbitMQConfiguration;
+import com.demo.books.models.AuctionedBook;
+import com.demo.books.models.Book;
+import com.demo.books.models.Status;
 import lombok.AllArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -20,8 +23,11 @@ public class BookService {
     RestTemplate restTemplate;
     RabbitTemplate template;
 
-    public Book addBook(Book book){
-        // Also send message to a queue which user service will consume and notify user accordingly.
+    public Book addBook(Book book, String username){
+        if(!isAdmin(username)){
+            return null;
+        }
+        // Send book details to the author subscription service through a rabbitMQ Queue.
         AuthorMessage message = new AuthorMessage();
 
         message.setUUID(UUID.randomUUID().toString());
@@ -37,29 +43,34 @@ public class BookService {
         return bookRepository.findAll();
     }
 
-    public List<Book> getBookContainingName( String name){
+    public List<Book> getBookContainingName(String name){
         return bookRepository.findAllByNameContaining(name);
     }
 
     public Book getBookById(int id){
-        if(bookRepository.findById(id).isPresent()){
-            return bookRepository.findById(id).get();
+        Optional<Book> book = bookRepository.findById(id);
+        return book.orElse(null);
+    }
+
+    public void updateBook( int id,  String name,  String author,int price,  int quantity,String username){
+        if(!isAdmin(username)){
+            return;
         }
-        return null;
+        Optional<Book> book = bookRepository.findById(id);
+        if(book.isPresent()){
+            Book b = book.get();
+            b.setPrice(price);
+            b.setQuantity(quantity);
+            b.setName(name);
+            b.setAuthor(author);
+            bookRepository.save(b);
+        }
     }
 
-    public void updateBook( int id,  String name,  String author,int price,  int quantity){
-        Book b = bookRepository.findById(id).get();
-        b.setPrice(price);
-        b.setQuantity(quantity);
-        b.setName(name);
-        b.setAuthor(author);
-
-        bookRepository.save(b);
-
-    }
-
-    public void deleteBook(int bookId){
+    public void deleteBook(int bookId,String username){
+        if(!isAdmin(username)){
+            return;
+        }
         bookRepository.deleteById(bookId);
     }
 
@@ -67,23 +78,39 @@ public class BookService {
         return bookRepository.findById(bookId).isPresent();
     }
 
-    public List<AuctionedBook> getAllAuctionedBooks(){
+    public List<AuctionedBook> getAllAuctionedBooks(String username){
+        if(!isAdmin(username)){
+            return null;
+        }
         return auctionedBooksRepository.findAllByStatusIs(Status.PENDING);
     }
 
     public AuctionedBook findAuctionedBookById(int id){
-        return auctionedBooksRepository.findById(id).get();
+        Optional<AuctionedBook> b = auctionedBooksRepository.findById(id);
+        return b.orElse(null);
     }
 
-    public void confirmAuctionedBook(int bookId, int auctionId, Status status){
-        AuctionedBook book = auctionedBooksRepository.findById(bookId).get();
-        book.setStatus(status);
-
-        auctionedBooksRepository.save(book);
-
-        // API call to auction to confirm it
-        restTemplate.getForObject("http://AUCTION/Auction/ConfirmAuction/" + auctionId , Boolean.class);
-
+    public void confirmAuctionedBook(int bookId, Status status,String username){
+        if(!isAdmin(username)){
+            return;
+        }
+        // get username too and confirm it!
+        Optional<AuctionedBook> b = auctionedBooksRepository.findById(bookId);
+        if(b.isPresent()){
+            AuctionedBook book = b.get();
+            book.setStatus(status);
+            auctionedBooksRepository.save(book);
+            // Http & lb both work but http gives error!
+            restTemplate.getForObject("lb://AUCTION/Auction/ConfirmAuction/" + book.getAuctionId()
+                    ,Boolean.class);
+        }
     }
 
+
+    // this works !
+    public boolean isAdmin(String username){
+        return Boolean.TRUE.equals(restTemplate.getForObject(
+                "lb://AUTHORIZATION/Authorization/IsAdmin/" + username
+                , Boolean.class));
+    }
 }

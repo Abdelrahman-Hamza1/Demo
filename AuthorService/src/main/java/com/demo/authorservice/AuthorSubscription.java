@@ -7,9 +7,6 @@ import lombok.NoArgsConstructor;
 
 @Data@Entity@Table@NoArgsConstructor
 public class AuthorSubscription {
-    // THIS WILL LISTEN TO REQS for subs as well as messages from every addition, then it gets
-    // the users that subbed to said author and send them an email.
-
     @Id
     @SequenceGenerator(
             name = "author_sequence",
@@ -24,7 +21,7 @@ public class AuthorSubscription {
     String authorName;
     String username;
     String userEmail;
-    Boolean isDeleted;
+//    Boolean isDeleted;
 
     public AuthorSubscription(String authorName, String username, String userEmail) {
         this.authorName = authorName;

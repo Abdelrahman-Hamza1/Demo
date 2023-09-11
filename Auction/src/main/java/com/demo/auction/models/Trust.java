@@ -1,4 +1,4 @@
-package com.demo.auction.auctions;
+package com.demo.auction.models;
 
 public enum Trust {
     TRUSTED,

@@ -1,4 +1,4 @@
-package com.demo.auction.auctions;
+package com.demo.auction.models;
 
 import com.demo.auction.bid.Bid;
 import jakarta.persistence.*;

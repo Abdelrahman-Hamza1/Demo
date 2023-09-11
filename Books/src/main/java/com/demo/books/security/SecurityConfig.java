@@ -1,4 +1,4 @@
-package com.demo.books;
+package com.demo.books.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,6 +9,9 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class SecurityConfig {
 
+    /*
+    PROBABLY NOT NEEDED -> REMOVE IT AS WELL AS DEPENDENCY !
+     */
 
 
     @Bean
@@ -16,8 +19,6 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> {
                       auth.anyRequest().permitAll();
-//                    auth.requestMatchers("/SystemAdmin/**").hasRole("ADMIN");
-//                    auth.requestMatchers("/User/**").hasAnyRole("ADMIN", "USER")
                 });
         return http.build();
     }

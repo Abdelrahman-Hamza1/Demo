@@ -7,9 +7,9 @@ import reactor.core.publisher.Mono;
 @RestController
 public class FallBacks {
 
-
     @GetMapping("/Handle-Failure")
     Mono<String> getBooksFallback() {
-        return Mono.just("Sorry brother, this service is currently down! Please try again later");
+        return Mono.just("Sorry brother, this service is currently down! " +
+                "Please try again later");
     }
 }
