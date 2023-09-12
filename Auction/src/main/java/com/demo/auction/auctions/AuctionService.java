@@ -8,6 +8,7 @@ import com.demo.auction.messaging.Message;
 import com.demo.auction.messaging.RabbitMQConfiguration;
 import com.demo.auction.models.Auction;
 import com.demo.auction.models.AuctionStatus;
+import com.demo.auction.models.Communications;
 import lombok.AllArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
@@ -25,11 +26,8 @@ public class AuctionService {
     AuctionRepository auctionRepository;
     BidRepository bidRepository;
     RabbitTemplate template;
-    private RestTemplate restTemplate;
+    Communications communications;
 
-    /*
-    Handle Auctions & Bids on them
-    */
     public List<Auction> getAllAuctions(){
         return auctionRepository.findAll();
     }
@@ -43,45 +41,46 @@ public class AuctionService {
         return  auctionRepository.getAuctionByTitleContaining(title);
     }
 
-    public void addBidOnAuction(int auctionId, Bid bid){
+    public Auction addBidOnAuction(int auctionId, Bid bid){
         Optional<Auction> auc = auctionRepository.findById(auctionId);
         if(auc.isPresent()){
             Auction auction = auc.get();
-            if(auction.getStatus() == AuctionStatus.PENDING){
-                return;
+            if(auction.getStatus() == AuctionStatus.PENDING || auction.getStatus() == AuctionStatus.SOLD){
+                return null;
             }
             auction.addBid(bid);
-            auctionRepository.save(auction);
+            return auctionRepository.save(auction);
         }
-
+        return null;
     }
 
-    public void itemSold(int auctionId, String username){
-        // CHECK USERNAME
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        // POSSIBLE CHANGE -> LET USER SELECT BID HE WANTS TO SELL TO AND GIVE US ITS ID -> ADD BUYER_ID
+//Possible update to itemSold method: Let user select the Bid he's selling to, attach it in request
+// We can verify that the bid actually belongs to the auction & if it does, mark the Bidders' Username
+//as the Buyer Username
+    public Auction itemSold(int auctionId, String username){
         Optional<Auction> auc = auctionRepository.findById(auctionId);
         if(auc.isPresent()){
             Auction auction = auc.get();
-            if(auction.getUsername().equalsIgnoreCase(username) || isAdmin(username)){
+            if(auction.getUsername().equalsIgnoreCase(username) || communications.isAdmin(username)){
                 auction.setStatus(AuctionStatus.SOLD);
-                auctionRepository.save(auction);
+                return auctionRepository.save(auction);
             }
         }
-
+        return null;
     }
 
-    public void removeBidById(int auctionId, int bidId, String username){
+    public Auction removeBidById(int auctionId, int bidId, String username){
         Optional<Auction> auction = auctionRepository.findById(auctionId);
         Optional<Bid> optionalBid = bidRepository.findById(bidId);
         if(auction.isPresent() && optionalBid.isPresent()){
             Auction auc = auction.get();
             Bid bid = optionalBid.get();
-            if(bid.getUsername().equals(username) || isAdmin(username)){
+            if(bid.getUsername().equals(username) || communications.isAdmin(username)){
                 auc.removeBidById(bid.getId());
-                auctionRepository.save(auc);
+                return auctionRepository.save(auc);
             }
         }
+        return null;
     }
 
     public void addAuctionForNewBook(String name, String author, String title, String username){
@@ -98,19 +97,13 @@ public class AuctionService {
 
     // ONLY ADMIN ACCESS THIS. -> Block it from the gateway -> only Book service will call it
     // and book service will only allow an admin to make the call.
-    public void confirmAuction(int auctionId){
+    public Auction confirmAuction(int auctionId){
         Optional<Auction> auc = auctionRepository.findById(auctionId);
         if(auc.isPresent()){
             Auction auction = auc.get();
             auction.setStatus(AuctionStatus.ONGOING);
-            auctionRepository.save(auction);
+            return auctionRepository.save(auction);
         }
+        return null;
     }
-
-    public boolean isAdmin(String username){
-        return Boolean.TRUE.equals(restTemplate.getForObject(
-                "lb://AUTHORIZATION/Authorization/IsAdmin/" + username
-                , Boolean.class));
-    }
-
 }

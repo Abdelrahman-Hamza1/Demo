@@ -4,7 +4,7 @@ package com.demo.auction.bid;
 import jakarta.persistence.*;
 import lombok.*;
 
-@Getter@Setter@ToString@EqualsAndHashCode@NoArgsConstructor
+@Getter@Setter@ToString@EqualsAndHashCode@NoArgsConstructor@AllArgsConstructor
 @Entity@Table
 public class Bid {
     @Id

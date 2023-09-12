@@ -14,7 +14,7 @@ import java.util.Optional;
 public class WishlistService {
 
     WishlistRepository wishlistRepository;
-    private RestTemplate restTemplate;
+    Communications communications;
 
     // Add checks for administration and username.
 
@@ -40,49 +40,49 @@ public class WishlistService {
         Optional<Wishlist> optionalWishlist = wishlistRepository.findById(wishlistId);
         if(optionalWishlist.isPresent()){
             Wishlist w = optionalWishlist.get();
-            if(w.getUsername().equals(username) || isAdmin(username)){
+            if(w.getUsername().equals(username) || communications.isAdmin(username)){
                 w.addBook(bookId);
-                wishlistRepository.save(w);
-                return w;
+                return wishlistRepository.save(w);
             }
         }
         return null;
     }
 
-    public void removeBook(int bookId, int wishListId, String username){
+    public boolean removeBook(int bookId, int wishListId, String username){
         Optional<Wishlist> optionalWishlist = wishlistRepository.findById(wishListId);
         if(optionalWishlist.isPresent()){
             Wishlist w = optionalWishlist.get();
-            if(w.getUsername().equals(username) || isAdmin(username)){
+            if(w.getUsername().equals(username) || communications.isAdmin(username)){
                 w.removeBook(bookId);
                 wishlistRepository.save(w);
+                return true;
             }
         }
+        return false;
     }
 
-    public void removeWishlist(int wishListId, String username){
+    public boolean removeWishlist(int wishListId, String username){
         Optional<Wishlist> optionalWishlist = wishlistRepository.findById(wishListId);
         if(optionalWishlist.isPresent()){
             Wishlist w = optionalWishlist.get();
-            if(w.getUsername().equals(username) || isAdmin(username)){
+            if(w.getUsername().equals(username) || communications.isAdmin(username)){
                 wishlistRepository.deleteById(wishListId);
+                return true;
             }
         }
+        return false;
     }
 
-    public void updateTitle(String title, int wishListId, String username) {
+    public Wishlist updateTitle(String title, int wishListId, String username) {
         Optional<Wishlist> optionalWishlist = wishlistRepository.findById(wishListId);
         if(optionalWishlist.isPresent()){
             Wishlist w = optionalWishlist.get();
-            if(w.getUsername().equals(username) || isAdmin(username)){
+            if(w.getUsername().equals(username) || communications.isAdmin(username)){
                 w.setTitle(title);
-                wishlistRepository.save(w);
+                return wishlistRepository.save(w);
             }
         }
+        return null;
     }
-    public boolean isAdmin(String username){
-        return Boolean.TRUE.equals(restTemplate.getForObject(
-                "lb://AUTHORIZATION/Authorization/IsAdmin/" + username
-                , Boolean.class));
-    }
+
 }

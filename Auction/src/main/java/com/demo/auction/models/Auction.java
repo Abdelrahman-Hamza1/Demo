@@ -3,6 +3,8 @@ package com.demo.auction.models;
 import com.demo.auction.bid.Bid;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,9 +26,9 @@ public class Auction {
     int bookId;
     String username;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    List<Bid> bids;
+    List<Bid> bids = new ArrayList<>();
     AuctionStatus status;
-    int buyerId = -1;
+    String buyerUsername = "";
     Trust trust = Trust.UNKNOWN;
 
     public Auction(String title, int bookId, String username, List<Bid> bids, AuctionStatus status) {

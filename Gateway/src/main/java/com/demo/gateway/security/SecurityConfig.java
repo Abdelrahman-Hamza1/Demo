@@ -2,7 +2,7 @@ package com.demo.gateway.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
+import org.springframework.security.config.Customizer;;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
@@ -10,13 +10,13 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 public class SecurityConfig {
 
     @Bean
-    SecurityWebFilterChain springWebFilterChain(ServerHttpSecurity http) {
+     SecurityWebFilterChain springWebFilterChain(ServerHttpSecurity http) {
         http
                 .authorizeExchange((authorize) -> authorize
-                        .pathMatchers("/Auction/**").permitAll()
                         .anyExchange().authenticated()
                 );
         http.oauth2Login(Customizer.withDefaults());
         return http.build();
     }
+
 }

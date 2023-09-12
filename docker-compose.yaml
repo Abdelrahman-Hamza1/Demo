@@ -18,84 +18,19 @@ services:
     ports:
       - "127.0.0.1:15672:15672"
       - "127.0.0.1:5672:5672"
-  Discovery:
-    build: .
+  discovery:
+    build:
+      context: .
+      dockerfile: C:/Users/Abdelrahman.Hamzeh/Demo/DiscoveryService/Dockerfile
     container_name: discovery
     ports:
       - "127.0.0.1:8761:8761"
   gateway:
-    build: .
+    build:
+      context: .
+      dockerfile: C:/Users/Abdelrahman.Hamzeh/Demo/Gateway/Dockerfile
     container_name: gateway
     ports:
       - "127.0.0.1:9000:9000"
-  auction:
-    build: .
-    container_name: auction
-    ports:
-      - "127.0.0.1:8081:8081"
     depends_on:
-      db:
-        condition: service_healthy
-  db:
-    container_name: db
-    image: mysql
-    ports:
-      - "3306"
-    environment:
-      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
-      MYSQL_USER: "user"
-      MYSQL_PASSWORD: "12345"
-      MYSQL_ROOT_PASSWORD: "12345"
-      MYSQL_DATABASE: "demoAuction"
-    healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
-      timeout: 5s
-      retries: 10
-  Books:
-    build: .
-    container_name: book
-    ports:
-      - "127.0.0.1:8080:8080"
-    depends_on:
-      db2:
-        condition: service_healthy
-  db2:
-    container_name: db2
-    image: mysql
-    ports:
-      - "3307"
-    environment:
-      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
-      MYSQL_USER: "user"
-      MYSQL_PASSWORD: "12345"
-      MYSQL_ROOT_PASSWORD: "12345"
-      MYSQL_DATABASE: "demoBook"
-    healthcheck:
-      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
-      timeout: 5s
-      retries: 10
-  wishlist:
-    build: .
-    container_name: wishlist
-    ports:
-      - "127.0.0.1:8082:8082"
-    depends_on:
-      db3:
-        condition: service_healthy
-  db3:
-    container_name: db3
-    image: mysql
-    ports:
-      - "3308"
-    environment:
-      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
-      MYSQL_USER: "user"
-      MYSQL_PASSWORD: "12345"
-      MYSQL_ROOT_PASSWORD: "12345"
-      MYSQL_DATABASE: "demoWishlist"
-    healthcheck:
-      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
-      timeout: 5s
-      retries: 10
-
-
+      - discovery

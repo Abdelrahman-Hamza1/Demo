@@ -41,10 +41,6 @@ spring:
           uri: lb://WISHLIST
           predicates:
             - Path=/Wishlist/**
-        - id: UserRoute
-          uri: lb://USER
-          predicates:
-            - Path=/auth/**
         - id: AuthorRoute
           uri: lb://AUTHOR
           predicates:
