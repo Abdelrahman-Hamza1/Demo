@@ -1,6 +1,6 @@
-FROM maven:3-amazoncorretto-20
+FROM amazoncorretto:20.0.2-alpine
 
-COPY . .
+COPY target ./target
 
 EXPOSE 8081
 
