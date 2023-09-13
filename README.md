@@ -50,16 +50,52 @@ API Endpoints
 All Endpoints currently use GET requests and transfer data in the URI. It should be modified later.
 Book Service
 
+Get	/Book/TestKeyCloak
+Get	/Book/IsValid/{bookId}
+Get	/Book/Add/{name}/{author}/{price}/{quantity}
+Get	/Book/Update/{id}/{name}/{author}/{price}/{quantity}
+Get	/Book/GetBooks
+Get	/GetBooks/Like/{name}
+Get	/Book/GetBookById/{bookId}
+Get	/Delete/{bookId}
+Get	/Book/ConfirmBook/{bookId}
+Get	/Book/GetPendingBooks")
 
 
 Auction Service
 
+Get	/Auction/GetAll
+Get	/Auction/CreateAuction/{title}/{bookId}
+Get	/Auction/GetAuctions/{title}
+Get	/Auction/AddBid/{auctionId}/{amount}/{comment}
+Get	/Auction/AddNewBookAuction/{title}/{name}/{author}
+Get	/Auction/SoldItem/{auctionId}
+Get	/Auction/DeleteBid/{auctionId}/{bidId}
+Get	/Auction/ConfirmAuction/{auctionId}
+
+
 Wishlist Service
+
+Get	/Wishlist/Create/{title}
+Get	/Wishlist/GetAll
+Get	/Wishlist/GetById/{id}
+Get	/Wishlist/GetByUser
+Get	/Wishlist/AddBook/{bookId}/{wishListId}
+Get	/Wishlist/DeleteBook/{bookId}/{wishListId}
+Get	/Wishlist/Delete/{wishListId}
+Get	/Wishlist/UpdateTitle/{wishListId}/{title}
+
 
 Author Service
 
+Get	/Author/GetAll
+Get	/Author/AddSub/{authorName}
+Get	/Author/DeleteSub/{authorName}
 
 
 Authorization Service
 
-
+Get	/Authorization/GetAll
+Get	/Authorization/IsAdmin/{username}
+Get	/Authorization/AddAdmin/{username}
+Get	/Authorization/DeleteAdmin/{username}
